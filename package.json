@@ -12,17 +12,13 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "parcel-bundler": "^1.12.5",
+    "parcel": "^2.12.0",
     "typescript": "^5.4.3"
-  }
-  ,
+  },
   "browserslist": [
     "> 0.5%",
     "last 2 versions",
     "not dead",
     "not IE 11"
   ]
-
 }
-
-
