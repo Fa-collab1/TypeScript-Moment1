@@ -7,26 +7,23 @@ interface CourseInfo {
 }
 
 // Funktion för att lägga till eller uppdatera en kurs
-function saveCourse(course: CourseInfo): void {
-    // Hämta befintliga kurser från localStorage och konvertera till array
+function saveCourse(course: CourseInfo): 'added' | 'updated' {
     const courses: CourseInfo[] = JSON.parse(localStorage.getItem('courses') || '[]');
-
-    // Hitta kursen i listan, om den finns
     const existingIndex = courses.findIndex(c => c.code === course.code);
+    let actionResult: 'added' | 'updated';
 
     if (existingIndex > -1) {
-        // Uppdatera befintlig kurs
         courses[existingIndex] = course;
+        actionResult = 'updated';
     } else {
-        // Lägg till ny kurs
         courses.push(course);
+        actionResult = 'added';
     }
 
-    // Spara den uppdaterade listan med kurser till localStorage
     localStorage.setItem('courses', JSON.stringify(courses));
-
-    // Rendera om kurslistan
     renderCourses();
+
+    return actionResult;
 }
 
 // Funktion för att rendera kurserna på webbsidan
@@ -50,7 +47,7 @@ function renderCourses(): void {
         // Skapar "Uppdatera"-knappen
         const updateButton = document.createElement('button');
         updateButton.textContent = 'Uppdatera';
-        updateButton.classList.add('update-button'); 
+        updateButton.classList.add('update-button');
         updateButton.addEventListener('click', function () {
             fillFormForUpdate(course.code);
         });
@@ -58,11 +55,10 @@ function renderCourses(): void {
         // Skapar "Radera"-knappen
         const deleteButton = document.createElement('button');
         deleteButton.textContent = 'Radera';
-        deleteButton.classList.add('delete-button'); 
+        deleteButton.classList.add('delete-button');
         deleteButton.addEventListener('click', function () {
             deleteCourse(course.code);
         });
-
 
         listItem.appendChild(updateButton);
         listItem.appendChild(deleteButton);
@@ -94,50 +90,60 @@ function setupFormListener(): void {
         const progressionInput = document.getElementById('progression') as HTMLInputElement;
         const syllabusInput = document.getElementById('syllabus') as HTMLInputElement;
         const operationInput = document.getElementById('operation') as HTMLInputElement;
+        const messageElement = document.getElementById('form-message'); // Hämta meddelandeelementet
 
-        // Kontrollerar att progressionen är giltig innan vi fortsätter
         if (!validateProgression(progressionInput.value.trim().toUpperCase())) {
-            alert("Progression måste vara 'A', 'B', eller 'C'.");
-            return; // Avbryter funktionen om progressionen inte är giltig
+            if (messageElement){ 
+                messageElement.textContent = "Progression must be 'A', 'B', or 'C'.";
+                messageElement.style.color = 'red';}
+            return;
         }
 
-        const courseInfo: CourseInfo = {
+        const actionResult = saveCourse({
             code: codeInput.value.trim(),
             name: nameInput.value.trim(),
             progression: progressionInput.value.trim().toUpperCase() as 'A' | 'B' | 'C',
-            syllabus: syllabusInput.value.trim()
-        };
+            syllabus: syllabusInput.value.trim(),
+        });
 
-        saveCourse(courseInfo);
+        if (messageElement) {
+            messageElement.textContent = `Course ${codeInput.value.trim()} has been ${actionResult}.`;
+            messageElement.style.color = 'green';
+        }
 
-        // Återställ formuläret
-        codeInput.value = '';
-        nameInput.value = '';
-        progressionInput.value = '';
-        syllabusInput.value = '';
-        operationInput.value = 'add'; // Återställ operation till 'add'
+        setTimeout(() => {
+            if (messageElement) messageElement.textContent = ''; // Rensa meddelandetexten
+            codeInput.value = '';
+            nameInput.value = '';
+            progressionInput.value = '';
+            syllabusInput.value = '';
+            operationInput.value = 'add'; // Återställ operation till 'add'
+        }, 3000);
     });
 }
 
-
 function deleteCourse(courseCode: string): void {
-    // Hämta befintliga kurser från localStorage och konvertera till array
     let courses: CourseInfo[] = JSON.parse(localStorage.getItem('courses') || '[]');
+    const courseExists = courses.some(course => course.code === courseCode);
+    if (!courseExists) return;
 
-    // Filtrera bort kursen som ska raderas
     courses = courses.filter(course => course.code !== courseCode);
-
-    // Spara den uppdaterade listan till localStorage
     localStorage.setItem('courses', JSON.stringify(courses));
-
-    // Uppdatera visningen av kurslistan
     renderCourses();
+
+    const messageElement = document.getElementById('form-message');
+    if (messageElement) {
+        messageElement.textContent = `Course ${courseCode} has been deleted.`;
+        messageElement.style.color = 'green';
+        setTimeout(() => {
+            messageElement.textContent = ''; // Rensa meddelandetexten
+        }, 3000);
+    }
 }
+
 function validateProgression(progression: string): boolean {
     return ['A', 'B', 'C'].includes(progression);
 }
-
-
 
 // Initiera sidan
 function initPage(): void {

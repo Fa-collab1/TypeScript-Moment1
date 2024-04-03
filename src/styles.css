@@ -93,3 +93,9 @@ button:hover {
     border-radius: 100%;
     cursor: pointer;
 }
+
+#submit-and-message-div {
+    display: flex;
+   
+}
+
