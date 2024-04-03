@@ -46,7 +46,7 @@ function renderCourses(): void {
 
         // Skapar "Uppdatera"-knappen
         const updateButton = document.createElement('button');
-        updateButton.textContent = 'Uppdatera';
+        updateButton.textContent = 'Update';
         updateButton.classList.add('update-button');
         updateButton.addEventListener('click', function () {
             fillFormForUpdate(course.code);
@@ -54,7 +54,7 @@ function renderCourses(): void {
 
         // Skapar "Radera"-knappen
         const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'Radera';
+        deleteButton.textContent = 'Delete';
         deleteButton.classList.add('delete-button');
         deleteButton.addEventListener('click', function () {
             deleteCourse(course.code);
