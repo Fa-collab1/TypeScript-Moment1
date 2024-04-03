@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Management</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Course Management</h1>
+    </header>
+    <main>
+        <section id="add-course-section">
+            <h2>Add New Course</h2>
+            <form id="add-course-form">
+                <div>
+                    <label for="code">Code:</label>
+                    <input type="text" id="code" required>
+                </div>
+                <div>
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" required>
+                </div>
+                <div>
+                    <label for="progression">Progression:</label>
+                    <input type="text" id="progression" required>
+                </div>
+                <div>
+                    <label for="syllabus">Syllabus URL:</label>
+                    <input type="url" id="syllabus" required>
+                </div>
+                <button type="submit">Add Course</button>
+            </form>
+        </section>
+        <section id="courses-section">
+            <h2>Courses</h2>
+            <ul id="courses-list"></ul>
+        </section>
+    </main>
+    <script src="script.ts" defer></script>
+</body>
+</html>
+
+
