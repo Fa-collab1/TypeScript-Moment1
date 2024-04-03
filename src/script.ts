@@ -38,10 +38,10 @@ function renderCourses(): void {
     courses.forEach(course => {
         const listItem = document.createElement('li');
         listItem.innerHTML = `
-            <div><strong>Kod:</strong> ${course.code}</div>
-            <div><strong>Namn:</strong> ${course.name}</div>
+            <div><strong>Code:</strong> ${course.code}</div>
+            <div><strong>Name:</strong> ${course.name}</div>
             <div><strong>Progression:</strong> ${course.progression}</div>
-            <div><strong>Kursplan:</strong> <a href="${course.syllabus}" target="_blank">Länk</a></div>
+            <div><strong>Syllabus:</strong> <a href="${course.syllabus}" target="_blank">Länk</a></div>
         `;
 
         // Skapar "Uppdatera"-knappen

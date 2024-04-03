@@ -1,101 +1,132 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Comic Sans MS', 'Arial', sans-serif;
+    font-size: 1em;
     margin: 0;
     padding: 0;
+    background-color: #f0f8ff; /* Ljusblå bakgrund för hela sidan */
 }
 
 header {
-    background-color: #333;
+    background-color: #ff6347; /* Header med tomatröd bakgrund */
     color: #fff;
-    padding: 2.22vw;
+    padding: 0.5vw;
     text-align: center;
 }
 
 main {
-    padding: 2.22vw;
+    padding: 1vw;
 }
 
 #add-course-section {
-    margin-bottom: 2.22vw;
+    margin-bottom: 1.5vw;
 }
 
 form div {
-    margin-bottom: 1.11vw;
+    margin-bottom: 0.7vw;
 }
 
 form label {
     display: inline-block;
-    width: 11.11vw;
+    width: 7vw;
+    font-size: 1.4em; /* Större text i formuläret */
+}
+
+form input, form button {
+    display: inline-block;
+    vertical-align: middle;
 }
 
 form input {
-    width: 22.22vw;
+    padding: 0.56vw;
+    border: 0.11vw solid #ccc;
+    border-radius: 5px; /* Rundade hörn på inputfälten */
+    width: 60%;
+    margin-left: 5%; /* Centrerar inputfält i formuläret */
+}
+
+/* Gör inputfält och etiketter bredare på mindre skärmar */
+@media (max-width: 1200px) {
+    form input, form label {
+        width: 99%;
+        margin-left: 0;
+    }
 }
 
 button {
     padding: 1vw;
-    background-color: #007bff;
+    border: none;  
     color: #fff;
-    border: none;
     cursor: pointer;
     margin-right: 1vw;
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: black; /* Svart bakgrundsfärg vid hover över knappar */
+}
+
+button:active {
+    background-color: darkgray; /* Mörkgrå bakgrundsfärg när knappen klickas */
 }
 
 #courses-list {
     list-style: none;
     padding: 0;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap; 
+    justify-content: flex-start;  /* Jämnt utrymme mellan kurskort */
 }
 
+/* Stil för varje kurs */
 #courses-list li {
-    margin-bottom: 2.22vw;
+    margin-bottom: 1vw;
+    margin-right: 1vw;
     border: 0.11vw solid #ccc;
     padding: 1.11vw;
+    background-color: #fafad2; /* Ljusgul bakgrund på kurskort */
+    border-radius: 10px; /* Rundade hörn på kurskort */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Skugga för 3D-effekt */
+    width: calc((100% / 5) - 4vw); /* Beräknar bredden för 5 kort per rad */
 }
 
-#courses-list li div {
-    margin-bottom: 0.56vw;
+/* Anpassningar för hur många kurskort som visas per rad beroende på skärmstorlek */
+@media (max-width: 1600px) {
+    #courses-list li {
+        width: calc((100% / 3) - 4vw); /* 3 kort per rad */
+    }
 }
 
-#courses-list li strong {
-    font-weight: bold;
+@media (max-width: 1200px) {
+    #courses-list li {
+        width: calc((100% / 2) - 4vw); /* 2 kort per rad */
+    }
 }
 
-#courses-list li a {
-    color: #007bff;
-}
-.delete-button {
-    background-color: #e57373; 
-    color: white;
-    border: none;
-    padding: 1vw; 
-    border-radius: 100%;
-    cursor: pointer;
+@media (max-width: 768px) {
+    #courses-list li {
+        width: 100%; /* En kurs per rad på små skärmar */
+    }
 }
 
-.update-button {
-    background-color: #64b5f6;
-    color: white;
-    border: none;
-    padding: 1vw; 
-    border-radius: 100%;
-    cursor: pointer;
-}
-
-.submit-button {
-    background-color: #1976d2; 
-    color: white;
-    border: none;
-    padding: 1vw; 
-    border-radius: 100%;
-    cursor: pointer;
+.delete-button, .update-button, .submit-button {
+    border-radius: 50%; /* Gör knapparna helt runda */
+    margin-top: 1vw;
 }
 
 #submit-and-message-div {
     display: flex;
-   
+    align-items: center; /* Centrera innehållet vertikalt */
 }
 
+/* Specifika färger för olika typer av knappar */
+.delete-button {
+    background-color: #e57373; /* Röd för 'Radera' */
+}
+
+.update-button {
+    background-color: #64b5f6; /* Blå för 'Uppdatera' */
+}
+
+.submit-button {
+    background-color: #1976d2; /* Mörkblå för 'Skicka' */
+}
