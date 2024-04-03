@@ -12,7 +12,7 @@
     </header>
     <main>
         <section id="add-course-section">
-            <h2>Add New Course</h2>
+            <h2>Add / Update Course</h2>
             <form id="add-course-form">
                 <div>
                     <label for="code">Code:</label>
@@ -30,7 +30,8 @@
                     <label for="syllabus">Syllabus URL:</label>
                     <input type="url" id="syllabus" required>
                 </div>
-                <button type="submit">Add Course</button>
+                <input type="hidden" id="operation" value="add">
+                <button class="submit-button" type="submit">Submit</button>
             </form>
         </section>
         <section id="courses-section">
@@ -41,5 +42,3 @@
     <script src="script.ts" defer></script>
 </body>
 </html>
-
-

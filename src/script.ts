@@ -6,111 +6,143 @@ interface CourseInfo {
     syllabus: string;           // URL till kursplanen
 }
 
-// Funktion för att lägga till en ny kurs
-function addCourse(course: CourseInfo): void {
+// Funktion för att lägga till eller uppdatera en kurs
+function saveCourse(course: CourseInfo): void {
     // Hämta befintliga kurser från localStorage och konvertera till array
     const courses: CourseInfo[] = JSON.parse(localStorage.getItem('courses') || '[]');
 
-    // Kontrollera om den nya kurskoden redan finns
-    const existingCourse = courses.find(c => c.code === course.code);
-    if (existingCourse) {
-        console.error('Kurskoden måste vara unik.');
-        return;
-    }
+    // Hitta kursen i listan, om den finns
+    const existingIndex = courses.findIndex(c => c.code === course.code);
 
-    // Lägg till den nya kursen i arrayen av kurser
-    courses.push(course);
+    if (existingIndex > -1) {
+        // Uppdatera befintlig kurs
+        courses[existingIndex] = course;
+    } else {
+        // Lägg till ny kurs
+        courses.push(course);
+    }
 
     // Spara den uppdaterade listan med kurser till localStorage
     localStorage.setItem('courses', JSON.stringify(courses));
 
-    // Rendera kurslistan på webbsidan
-    renderCourses();
-}
-
-// Funktion för att uppdatera kursinformation
-function updateCourse(code: string, updatedCourse: CourseInfo): void {
-    // Hämta befintliga kurser från localStorage och konvertera till array
-    const courses: CourseInfo[] = JSON.parse(localStorage.getItem('courses') || '[]');
-
-    // Hitta index för den kurs som ska uppdateras
-    const index = courses.findIndex(c => c.code === code);
-    if (index === -1) {
-        console.error('Kursen kunde inte hittas.');
-        return;
-    }
-
-    // Uppdatera kursinformationen
-    courses[index] = updatedCourse;
-
-    // Spara den uppdaterade listan med kurser till localStorage
-    localStorage.setItem('courses', JSON.stringify(courses));
-
-    // Rendera kurslistan på webbsidan
+    // Rendera om kurslistan
     renderCourses();
 }
 
 // Funktion för att rendera kurserna på webbsidan
 function renderCourses(): void {
-    // Hämta elementet för kurslistan från HTML-dokumentet
     const coursesList = document.getElementById('courses-list');
     if (!coursesList) return;
 
-    // Rensa kurslistan
-    coursesList.innerHTML = '';
+    coursesList.innerHTML = ''; // Rensa befintlig lista
 
-    // Hämta kurser från localStorage och konvertera till array
     const courses: CourseInfo[] = JSON.parse(localStorage.getItem('courses') || '[]');
 
-    // Skapa HTML-element för varje kurs och lägg till dem i kurslistan
     courses.forEach(course => {
         const listItem = document.createElement('li');
         listItem.innerHTML = `
             <div><strong>Kod:</strong> ${course.code}</div>
             <div><strong>Namn:</strong> ${course.name}</div>
             <div><strong>Progression:</strong> ${course.progression}</div>
-            <div><strong>Kursplan:</strong> <a href="${course.syllabus}" target="_blank">${course.syllabus}</a></div>
+            <div><strong>Kursplan:</strong> <a href="${course.syllabus}" target="_blank">Länk</a></div>
         `;
+
+        // Skapar "Uppdatera"-knappen
+        const updateButton = document.createElement('button');
+        updateButton.textContent = 'Uppdatera';
+        updateButton.classList.add('update-button'); 
+        updateButton.addEventListener('click', function () {
+            fillFormForUpdate(course.code);
+        });
+
+        // Skapar "Radera"-knappen
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Radera';
+        deleteButton.classList.add('delete-button'); 
+        deleteButton.addEventListener('click', function () {
+            deleteCourse(course.code);
+        });
+
+
+        listItem.appendChild(updateButton);
+        listItem.appendChild(deleteButton);
         coursesList.appendChild(listItem);
     });
 }
 
-// Funktion för att validera kursprogression
-function validateProgression(progression: string): progression is 'A' | 'B' | 'C' {
-    return progression === 'A' || progression === 'B' || progression === 'C';
+// Funktion för att fylla i formuläret med kursinformation för uppdatering
+function fillFormForUpdate(code: string): void {
+    const courses: CourseInfo[] = JSON.parse(localStorage.getItem('courses') || '[]');
+    const course = courses.find(c => c.code === code);
+    if (!course) return;
+
+    (document.getElementById('code') as HTMLInputElement).value = course.code;
+    (document.getElementById('name') as HTMLInputElement).value = course.name;
+    (document.getElementById('progression') as HTMLInputElement).value = course.progression;
+    (document.getElementById('syllabus') as HTMLInputElement).value = course.syllabus;
+    (document.getElementById('operation') as HTMLInputElement).value = 'update';
+
+    window.scrollTo(0, 0); // Scrolla till toppen för att visa formuläret
 }
 
-// Händelselyssnare för att lägga till en ny kurs
-document.getElementById('add-course-form')?.addEventListener('submit', function (event) {
-    event.preventDefault();
-    
-    // Hämta input-fält från HTML-dokumentet
-    const codeInput = document.getElementById('code') as HTMLInputElement;
-    const nameInput = document.getElementById('name') as HTMLInputElement;
-    const progressionInput = document.getElementById('progression') as HTMLInputElement;
-    const syllabusInput = document.getElementById('syllabus') as HTMLInputElement;
+function setupFormListener(): void {
+    document.getElementById('add-course-form')?.addEventListener('submit', function (event) {
+        event.preventDefault();
 
-    // Hämta värden från input-fälten och rensa whitespace
-    const code = codeInput.value.trim();
-    const name = nameInput.value.trim();
-    const progression = progressionInput.value.trim().toUpperCase();
-    const syllabus = syllabusInput.value.trim();
+        const codeInput = document.getElementById('code') as HTMLInputElement;
+        const nameInput = document.getElementById('name') as HTMLInputElement;
+        const progressionInput = document.getElementById('progression') as HTMLInputElement;
+        const syllabusInput = document.getElementById('syllabus') as HTMLInputElement;
+        const operationInput = document.getElementById('operation') as HTMLInputElement;
 
-    // Validera kursprogressionen
-    if (!validateProgression(progression)) {
-        console.error('Ogiltig progression.');
-        return;
-    }
+        // Kontrollerar att progressionen är giltig innan vi fortsätter
+        if (!validateProgression(progressionInput.value.trim().toUpperCase())) {
+            alert("Progression måste vara 'A', 'B', eller 'C'.");
+            return; // Avbryter funktionen om progressionen inte är giltig
+        }
 
-    // Lägg till den nya kursen
-    addCourse({ code, name, progression, syllabus });
+        const courseInfo: CourseInfo = {
+            code: codeInput.value.trim(),
+            name: nameInput.value.trim(),
+            progression: progressionInput.value.trim().toUpperCase() as 'A' | 'B' | 'C',
+            syllabus: syllabusInput.value.trim()
+        };
 
-    // Återställ input-fälten
-    codeInput.value = '';
-    nameInput.value = '';
-    progressionInput.value = '';
-    syllabusInput.value = '';
-});
+        saveCourse(courseInfo);
 
-// Rendera kurserna när sidan laddas
-renderCourses();
+        // Återställ formuläret
+        codeInput.value = '';
+        nameInput.value = '';
+        progressionInput.value = '';
+        syllabusInput.value = '';
+        operationInput.value = 'add'; // Återställ operation till 'add'
+    });
+}
+
+
+function deleteCourse(courseCode: string): void {
+    // Hämta befintliga kurser från localStorage och konvertera till array
+    let courses: CourseInfo[] = JSON.parse(localStorage.getItem('courses') || '[]');
+
+    // Filtrera bort kursen som ska raderas
+    courses = courses.filter(course => course.code !== courseCode);
+
+    // Spara den uppdaterade listan till localStorage
+    localStorage.setItem('courses', JSON.stringify(courses));
+
+    // Uppdatera visningen av kurslistan
+    renderCourses();
+}
+function validateProgression(progression: string): boolean {
+    return ['A', 'B', 'C'].includes(progression);
+}
+
+
+
+// Initiera sidan
+function initPage(): void {
+    renderCourses();
+    setupFormListener();
+}
+
+initPage();
